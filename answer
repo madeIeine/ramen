@@ -1,0 +1,261 @@
+//Setting up variables
+var varieties = getColumn("Ramen Rating", "Variety");
+var countries = getColumn("Ramen Rating", "Country");
+var styles = getColumn("Ramen Rating", "Style");
+var stars = getColumn("Ramen Rating", "Stars");
+
+var filteredVarieties = [];
+var filteredCountries = [];
+var filteredStyles = [];
+var filteredStars = [];
+
+var outputText ="";
+var averageStars = 0;
+var userChoice = "";
+
+var outputOriginalFontSize = getProperty("output", "font-size");
+var buttonOriginalFontSize = getProperty("countrySearchButton", "font-size");
+var dropdownOriginalFontSize = getProperty("stylesDropdown", "font-size");
+
+// Event Handlers
+
+onEvent("countrySearchButton", "click", function( ) {
+  showElement("countriesDropdown");
+  hideElement("starsDropdown");
+  hideElement("stylesDropdown");
+});
+
+onEvent("styleSearchButton", "click", function( ) {
+  showElement("stylesDropdown");
+  hideElement("countriesDropdown");
+  hideElement("starsDropdown");
+});
+
+onEvent("starSearchButton", "click", function( ) {
+  showElement("starsDropdown");
+  hideElement("countriesDropdown");
+  hideElement("stylesDropdown");
+});
+
+onEvent("countriesDropdown", "change", function( ) {
+	userChoice = getText("countriesDropdown");
+	 filterByCountry(userChoice);
+	 
+	 averageStars = average(filteredStars);
+	 outputText = "There are " + filteredVarieties.length + " varieties of ramen from " + userChoice;
+	 
+	 //outputText = outputText + " with an average rating of " + averageStars + " stars.";
+	 setText("output",outputText);
+});
+
+onEvent("stylesDropdown", "change", function( ) {
+	userChoice = getText("stylesDropdown");
+	 filterByStyle(userChoice);
+	 
+	 averageStars = average(filteredStars);
+	 outputText = "There are " + filteredVarieties.length + " varieties of ramen in the " + userChoice + " style.";
+	 //4️⃣  Step Four
+	 
+	 outputText = outputText + " with an average rating of " + averageStars + " stars.";
+	 setText("output",outputText);
+});
+
+onEvent("starsDropdown", "change", function( ) {
+  userChoice = getText("starsDropdown").substring(0,1);
+  filterByStars(userChoice);
+  
+  averageStars = average(filteredStars);
+  outputText = "There are " + filteredVarieties.length + " varieties of ramen with a rating of " + userChoice + " stars or higher.";
+  //4️⃣  Step Four
+  
+  
+  outputText = outputText + "\n\nThat number represents " + percentOfTotal(filteredStars) + "% of all the ramen varieties included in this dataset.";
+  setText("output",outputText);
+});
+
+var outputFontSize;
+var buttonFontSize;
+var dropdownFontSize;
+
+onEvent("textSizeSlider", "input", function( ) {
+	var fontMultiplier = getNumber("textSizeSlider") / 5;
+	
+	outputFontSize = adjustFontSize(outputOriginalFontSize, fontMultiplier);
+	buttonFontSize = adjustFontSize(buttonOriginalFontSize, fontMultiplier);
+	dropdownFontSize = adjustFontSize(dropdownOriginalFontSize, fontMultiplier);
+	
+	setProperty("output","font-size", outputFontSize);
+	setProperty("countriesDropdown","font-size", dropdownFontSize);
+	setProperty("stylesDropdown","font-size", dropdownFontSize);
+	setProperty("starsDropdown","font-size", dropdownFontSize);
+	setProperty("starSearchButton","font-size", buttonFontSize);
+	setProperty("styleSearchButton","font-size", buttonFontSize);
+	setProperty("countrySearchButton","font-size", buttonFontSize);
+
+});
+
+
+//*******DO NOT ADD CODE ABOVE THIS LINE****
+
+//*******EDIT CODE BELOW THIS LINE*********
+
+
+//1️⃣ Step One
+
+//Accessibility feature - allowing user to change font size.
+
+function adjustFontSize(originalSize, multiplier){
+  //Assign a value to result
+  var result = multiplier * originalSize;
+  
+  //Update the conditional statement on the line below to check if result is greater than or equal to 20
+  if(result >= 20 ){
+    //Set the result value to 19
+    result = 19;
+  }
+  
+  //return the value stored in the variable result
+  return result;
+}
+
+//2️⃣ Step Two
+
+//Write the filterByCountry(country) function 
+function filterByCountry(country){
+  //set all the filtered lists to an empty list []
+filter();
+
+
+  for (var i = 0; i < varieties.length; i++) {
+    //Inside the loop, update the conditional statement to check
+    //if the value assigned to country is equal to
+    //the value at countries[i]
+    if (country == countries[i]) {
+      //If that condition is true, append the elements at index i
+      //to the respective filtered lists, so for example: 
+      //append stars[i] to the list filteredStars
+      //do that for all the appropriate filtered lists
+      appendItem(filteredVarieties,varieties[i]);
+      appendItem(filteredStyles,styles[i]);
+      appendItem(filteredStars,stars[i]);
+    }
+    
+  }
+  
+}
+
+//3️⃣ Step Three
+
+function filterByStyle(style){
+  //set all the filtered lists to an empty list []
+filter();
+
+
+  for (var i = 0; i < varieties.length; i++) {
+    
+    if (style == styles[i]) {
+      //If that condition is true, append the elements at index i
+      //to the respective filtered lists, so for example: 
+      //append stars[i] to the list filteredStars
+      //do that for all the appropriate filtered lists
+      appendItem(filteredVarieties,varieties[i]);
+      //appendItem(filteredStyles,styles[i]);
+      appendItem(filteredStars,stars[i]);
+      appendItem(filteredCountries,countries[i]);
+    }
+    
+  }
+  
+}
+
+//3️⃣ Step Three
+
+//Write the filterByStars(star) function following the above pattern.
+//You'll want to write this conditional statement using either
+//>= or <=
+
+
+function filterByStars(star){
+  //set all the filtered lists to an empty list []
+filter();
+
+
+  for (var i = 0; i < varieties.length; i++) {
+    
+    if (star <= stars[i]) {
+      //If that condition is true, append the elements at index i
+      //to the respective filtered lists, so for example: 
+      //append stars[i] to the list filteredStars
+      //do that for all the appropriate filtered lists
+      appendItem(filteredVarieties,varieties[i]);
+      appendItem(filteredStyles,styles[i]);
+      //appendItem(filteredStars,stars[i]);
+      appendItem(filteredCountries,countries[i]);
+    }
+    
+  }
+  
+}
+
+
+//4️⃣ Step Four
+
+function average(list) {
+  //create sum variable and set value to 0
+  var sum = 0;
+  
+  
+  //Use a loop to traverse the list and add every value
+  //from the list to the value stored in sum
+  for (var i = 0; i < list.length; i++){
+    sum = sum + list[i];
+  }
+  
+  //create mean variable and use sum and list.length to set its value
+  var mean = sum/list.length;
+  
+  //Use the roundToTenths function to round the value stored in mean
+  
+  //return the value stored in mean
+  return roundToTenths(mean);
+}
+
+
+//This method accepts a number as an argument and returns the number rounded to the nearest tenth
+function roundToTenths(number){
+  return Math.round(number*10)/10;
+}
+
+
+//5️⃣ Step Five
+
+function percentOfTotal(list) {
+  //Use the length of the list passed in as an argument
+  //and the length of the varieties list to calculate 
+  //a percentage
+  
+  var percent = list.length/varieties.length;
+  
+  //Multiply the value by 100
+  //Round the value
+  //Return the value
+  return Math.round(percent * 100);
+  
+}
+
+
+//6️⃣ Step Six
+
+//Write 1-2 functions that helps reduce redundant chunks of code in your program
+
+function filter() {
+  filteredVarieties = [];
+filteredCountries = [];
+filteredStyles = [];
+filteredStars = [];
+  
+}
+
+
+
+
